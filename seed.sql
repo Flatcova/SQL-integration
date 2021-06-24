@@ -141,4 +141,27 @@ RETURN NULL;
 END;
 $$;
 
+--
+-- Name: jsonb_remove_columns(jsonb, text[]); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.jsonb_remove_columns(json_input jsonb, column_name_array text[]) RETURNS jsonb
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  _item text;
+BEGIN
+
+  FOREACH _item IN ARRAY column_name_array
+  LOOP
+  	IF (json_input->_item) IS NOT NULL THEN
+    	json_input := json_input - _item;
+	END IF;
+  END LOOP;
+
+  RETURN json_input;
+END;
+$$;
+
+
 CREATE TRIGGER <table_name>_audit_log AFTER INSERT OR DELETE OR UPDATE ON public.<table_name> FOR EACH ROW EXECUTE PROCEDURE public.general_audit_log_entries_trigger('id', '{}');
